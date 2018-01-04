@@ -8,8 +8,7 @@ from generate_input import load_images_from_folder
 
 # Load training data:
 tic1 = time.time()
-#dir_train = 'path to the folder with images for training'  # Folder with images
-dir_train = '/Users/tetianadadakova/PycharmProjects/ComputationalImaging/AUTOMAP/data/images/64res/64res_train'
+dir_train = 'path to the folder with images for training'  # Folder with images
 n_im = 70  # How many images to load
 X_train, Y_train = load_images_from_folder(  # Load images for training
     dir_train,
