@@ -204,14 +204,14 @@ X_iFFT_M4 = np.sqrt(np.power(X_iFFT3.real, 2)
 
 # SHOW
 # Show Y - input images
-plt.subplot(341), plt.imshow(Y_recon[im1, :, :], cmap='gray')
-plt.title('X_dev_model1'), plt.xticks([]), plt.yticks([])
-plt.subplot(342), plt.imshow(Y_recon[im2, :, :], cmap='gray')
-plt.title('X_dev_model2'), plt.xticks([]), plt.yticks([])
-plt.subplot(343), plt.imshow(Y_recon[im3, :, :], cmap='gray')
-plt.title('X_dev_model3'), plt.xticks([]), plt.yticks([])
-plt.subplot(344), plt.imshow(Y_recon[im4, :, :], cmap='gray')
-plt.title('X_dev_model4'), plt.xticks([]), plt.yticks([])
+plt.subplot(341), plt.imshow(Y_dev[im1, :, :], cmap='gray')
+plt.title('Y_dev1'), plt.xticks([]), plt.yticks([])
+plt.subplot(342), plt.imshow(Y_dev[im2, :, :], cmap='gray')
+plt.title('Y_dev2'), plt.xticks([]), plt.yticks([])
+plt.subplot(343), plt.imshow(Y_dev[im3, :, :], cmap='gray')
+plt.title('Y_dev3'), plt.xticks([]), plt.yticks([])
+plt.subplot(344), plt.imshow(Y_dev[im4, :, :], cmap='gray')
+plt.title('Y_dev4'), plt.xticks([]), plt.yticks([])
 
 # Show images reconstructed using iFFT
 plt.subplot(345), plt.imshow(X_iFFT_M1, cmap='gray')
@@ -224,14 +224,14 @@ plt.subplot(348), plt.imshow(X_iFFT_M4, cmap='gray')
 plt.title('X_iFFT4'), plt.xticks([]), plt.yticks([])
 
 # Show images reconstructed using model
-plt.subplot(349), plt.imshow(Y_dev[im1, :, :], cmap='gray')
-plt.title('Y_dev1'), plt.xticks([]), plt.yticks([])
-plt.subplot(3, 4, 10), plt.imshow(Y_dev[im2, :, :], cmap='gray')
-plt.title('Y_dev2'), plt.xticks([]), plt.yticks([])
-plt.subplot(3, 4, 11), plt.imshow(Y_dev[im3, :, :], cmap='gray')
-plt.title('Y_dev3'), plt.xticks([]), plt.yticks([])
-plt.subplot(3, 4, 12), plt.imshow(Y_dev[im4, :, :], cmap='gray')
-plt.title('Y_dev4'), plt.xticks([]), plt.yticks([])
+plt.subplot(349), plt.imshow(Y_recon[im1, :, :], cmap='gray')
+plt.title('Y_recon1'), plt.xticks([]), plt.yticks([])
+plt.subplot(3, 4, 10), plt.imshow(Y_recon[im2, :, :], cmap='gray')
+plt.title('Y_recon2'), plt.xticks([]), plt.yticks([])
+plt.subplot(3, 4, 11), plt.imshow(Y_recon[im3, :, :], cmap='gray')
+plt.title('Y_recon3'), plt.xticks([]), plt.yticks([])
+plt.subplot(3, 4, 12), plt.imshow(Y_recon[im4, :, :], cmap='gray')
+plt.title('Y_recon4'), plt.xticks([]), plt.yticks([])
 plt.show()
 
 
