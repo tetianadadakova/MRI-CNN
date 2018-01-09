@@ -11,16 +11,16 @@ I encourage you to contact me if you have any questions, comments, or suggestion
 The code uses data in image space and corresponding frequency space to teach a CNN model to do a recnstruction of an MRI image. The architecture consists of fully-connected (FC) and convolutional (Conv) layers and is the following:
 FC1 -> tahn activation -> FC2 -> tanh activation -> Conv1 -> ReLU activation -> Conv2 -> ReLU activation -> de-Conv
 
-generate_input.py
+generate_input.py  
 This includes function load_images_from_folder, which creates training set for a model. It loads images into array Y and performs a Fourier transform and saves both real and imaginary parts of it into array X.
 Optional normalizing of data and rotation of input images are available.
 
-generate_input_motion.py
+generate_input_motion.py  
 This includes function load_images_from_folder, which creates training set for a model. It loads images into array Y and "moves" it by 8 pixels the performs a Fourier transform and combined the frequency space of both Y images (before and after it was moved) - as if the patient moved by 8 pixels in one direction in the middle of the acquisition. Then the function saves both real and imaginary parts of motion-corrupted frequency space into array X.
 Optional normalizing of data and rotation of input images are available.
 
-myAutomap.py
+myAutomap.py  
 This includes the CNN model using TensorFlow.
 
-myAutomap_recon.py
+myAutomap_recon.py  
 Uses forward propagation to reconstruct image from frequency space using the trained model, which was saved in myAutomap.py
