@@ -169,28 +169,30 @@ def model(X_dev):
     return parameters, Y_recon
 
 
-# Reconstruct the
+# Reconstruct the image using trained model
 _, Y_recon = model(X_dev)
-
-print('x_test_temp_eval.shape = ', Y_recon.shape)
+print('Y_recon.shape = ', Y_recon.shape)
 print('Y_dev.shape = ', Y_dev.shape)
 
 
+# Visualize the images, their reconstruction using iFFT and using trained model
 # 4 images to visualize:
 im1 = 32
 im2 = 33
 im3 = 34
 im4 = 35
 
-
 # iFFT back to image from corrupted frequency space
+# Complex image from real and imaginary part
 X_dev_compl = X_dev[:, :, :, 0] + X_dev[:, :, :, 1] * 1j
 
+#iFFT
 X_iFFT0 = np.fft.ifft2(X_dev_compl[im1, :, :])
 X_iFFT1 = np.fft.ifft2(X_dev_compl[im2, :, :])
 X_iFFT2 = np.fft.ifft2(X_dev_compl[im3, :, :])
 X_iFFT3 = np.fft.ifft2(X_dev_compl[im4, :, :])
 
+# Magnitude of complex image
 X_iFFT_M1 = np.sqrt(np.power(X_iFFT0.real, 2)
                     + np.power(X_iFFT0.imag, 2))
 X_iFFT_M2 = np.sqrt(np.power(X_iFFT1.real, 2)
@@ -200,6 +202,7 @@ X_iFFT_M3 = np.sqrt(np.power(X_iFFT2.real, 2)
 X_iFFT_M4 = np.sqrt(np.power(X_iFFT3.real, 2)
                     + np.power(X_iFFT3.imag, 2))
 
+# SHOW
 # Show Y - input images
 plt.subplot(341), plt.imshow(Y_recon[im1, :, :], cmap='gray')
 plt.title('X_dev_model1'), plt.xticks([]), plt.yticks([])
