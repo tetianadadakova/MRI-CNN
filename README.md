@@ -24,3 +24,8 @@ This includes the CNN model using TensorFlow.
 
 myAutomap_recon.py  
 Uses forward propagation to reconstruct image from frequency space using the trained model, which was saved in myAutomap.py
+
+(Very) preliminary results:  
+First row shows original images; second row shows the images reconstructed from frequency space corrupted by motion - ghosting artefacts are clearly seen; third row shows images reconstructed using trained model - ghosting is gone!, however, images look very blurry - the cost was still quite high, maybe increasing number of epochs will help.  
+![alt text](MRI-CNN/Img/myAutomap_5000im80_ep100_lr000002.png “Examples of images: Y_dev - original; X_iFFT - reconstructed using inverse Fourier transform; Y_recon - reconstructed using trained CNN model”)
+
