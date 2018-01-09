@@ -21,3 +21,6 @@ Optional normalizing of data and rotation of input images are available.
 
 myAutomap.py
 This includes the CNN model using TensorFlow.
+
+myAutomap_recon.py
+Uses forward propagation to reconstruct image from frequency space using the trained model, which was saved in myAutomap.py
