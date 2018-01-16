@@ -29,5 +29,5 @@ Uses forward propagation to reconstruct image from frequency space using the tra
 First row shows original images; second row shows the images reconstructed from frequency space corrupted by motion - ghosting artefacts are clearly seen; third row shows images reconstructed using trained model - ghosting is gone!, however, images look very blurry - the cost was still quite high, maybe increasing number of epochs will help.
 Hyper parameters: learning rate - 0.00002, 7500 images (30000 after augmentation), 80x80 resolution, 200 epochs.
 
-![alt text](myAutomap_7500im80_ep200_lr000002_nonnorm.png)
+![alt text](Img/myAutomap_7500im80_ep200_lr000002_nonnorm.png)
 
