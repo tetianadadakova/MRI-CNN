@@ -8,7 +8,7 @@ NB2: I use the following Python package to download images from ImageNet: imagen
 I encourage you to contact me if you have any questions, comments, or suggestions: tetiana.d@gmail.com.
 
 
-The code uses data in image space and corresponding frequency space to teach a CNN model to do a recnstruction of an MRI image. The architecture consists of fully-connected (FC) and convolutional (Conv) layers and is the following:
+The code uses data in image space and corresponding frequency space to teach a CNN model to do a reconstruction of an MRI image. The architecture consists of fully-connected (FC) and convolutional (Conv) layers and is the following:
 FC1 -> tahn activation -> FC2 -> tanh activation -> Conv1 -> ReLU activation -> Conv2 -> ReLU activation -> de-Conv
 
 generate_input.py  
@@ -27,7 +27,8 @@ Uses forward propagation to reconstruct image from frequency space using the tra
 
 (Very) preliminary results:  
 First row shows original images; second row shows the images reconstructed from frequency space corrupted by motion - ghosting artefacts are clearly seen; third row shows images reconstructed using trained model - ghosting is gone!, however, images look very blurry - the cost was still quite high, maybe increasing number of epochs will help.
-Hyper parameters: learning rate - 0.00002, 7500 images (30000 after augmentation), 80x80 resolution, 200 epochs.
+
+Hyperparameters: learning rate - 0.00002, 7500 images (30000 after augmentation), 80x80 resolution, 200 epochs.
 
 ![alt text](Img/myAutomap_7500im80_ep200_lr000002_nonnorm.png)
 
