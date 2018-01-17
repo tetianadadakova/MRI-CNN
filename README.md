@@ -27,7 +27,7 @@ Uses forward propagation to reconstruct image from frequency space using the tra
 
 
 **(Very) preliminary results:**  
-Y_dev - original images; X_iFFT - images reconstructed from frequency space corrupted by motion - ghosting artefacts are clearly seen; Y_recon - images reconstructed using trained model - ghosting is gone!, however, images look very blurry - the cost was still quite high - needs optimizing.
+Y_dev - original images; X_iFFT - images reconstructed from frequency space corrupted by motion - ghosting artifacts are clearly seen; Y_recon - images reconstructed using trained model - ghosting is gone!, however, images look very blurry - the cost was still quite high - needs optimizing.
 
 Hyperparameters: learning rate - 0.00002, 7500 images (30000 after augmentation), 80x80 resolution, 200 epochs.
 
