@@ -30,5 +30,9 @@ First row shows original images; second row shows the images reconstructed from 
 
 Hyperparameters: learning rate - 0.00002, 7500 images (30000 after augmentation), 80x80 resolution, 200 epochs.
 
+Example with brain image:
+![alt text](Img/myAutomap_7500im80_ep200_lr000002_nonnorm_brain.png)
+
+Other examples:
 ![alt text](Img/myAutomap_7500im80_ep200_lr000002_nonnorm.png)
 
