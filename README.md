@@ -2,7 +2,7 @@ This is my implementation of the AUTOMAP algorithm described in the following pa
 B. Zhu, J. Z. Liu, B. R. Rosen, and M. S. Rosen. Image reconstruction by domain transform manifold learning. arXiv preprint arXiv:1704.08841, 2017.
 https://arxiv.org/abs/1704.08841
 
-NB1: I run the code at AWS cluster, using the following AMI: Ubuntu x64 AMI with TensorFlow (GPU) (https://goo.gl/F3zPNv), and the following instance: g2.2xlarge. 
+NB1: I run the code at AWS cluster, using the following AMI: Deep Learning AMI (Ubuntu), and the following instance: p3.2xlarge. In addition, I use CPU’s memory to initialize the second fully-connected layer for 128x128 images (otherwise, there is memory error)
 NB2: I use the following Python package to download images from ImageNet: imagenetscraper 1.0 (https://goo.gl/QK6f8p)
 
 I encourage you to contact me if you have any questions, comments, or suggestions: tetiana.d@gmail.com.

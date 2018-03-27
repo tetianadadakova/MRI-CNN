@@ -9,7 +9,7 @@ from generate_input import load_images_from_folder
 # Load training data:
 tic1 = time.time()
 dir_train = 'path to the folder with images for training'  # Folder with images
-n_im = 70  # How many images to load
+n_im = 10000  # How many images to load
 X_train, Y_train = load_images_from_folder(  # Load images for training
     dir_train,
     n_im,
@@ -62,7 +62,7 @@ def forward_propagation(x, parameters):
     Fully connected (FC1) -> tanh activation: size (n_im, n_H0 * n_W0)
     -> Fully connected (FC2) -> tanh activation:  size (n_im, n_H0 * n_W0)
     -> Convolutional -> ReLU activation: size (n_im, n_H0, n_W0, 64)
-    -> Convolutional -> ReLU activation: size (n_im, n_H0, n_W0, 64)
+    -> Convolutional -> ReLU activation with l1 regularization: size (n_im, n_H0, n_W0, 64)
     -> De-convolutional: size (n_im, n_H0, n_W0)
     :param x: Input - images in frequency space, size (n_im, n_H0, n_W0, 2)
     :param parameters: parameters of the layers (e.g. filters)
@@ -72,39 +72,41 @@ def forward_propagation(x, parameters):
     x_temp = tf.contrib.layers.flatten(x)  # size (n_im, n_H0 * n_W0 * 2)
     n_out = np.int(x.shape[1] * x.shape[2])  # size (n_im, n_H0 * n_W0)
 
-    # FC: input size (n_im, n_H0 * n_W0 * 2), output size (n_im, n_H0 * n_W0)
-    FC1 = tf.contrib.layers.fully_connected(
-        x_temp,
-        n_out,
-        activation_fn=tf.tanh,
-        normalizer_fn=None,
-        normalizer_params=None,
-        weights_initializer=tf.contrib.layers.xavier_initializer(),
-        weights_regularizer=None,
-        biases_initializer=None,
-        biases_regularizer=None,
-        reuse=True,
-        variables_collections=None,
-        outputs_collections=None,
-        trainable=True,
-        scope='fc1')
+    with tf.device('/gpu:0'):
+        # FC: input size (n_im, n_H0 * n_W0 * 2), output size (n_im, n_H0 * n_W0)
+        FC1 = tf.contrib.layers.fully_connected(
+            x_temp,
+            n_out,
+            activation_fn=tf.tanh,
+            normalizer_fn=None,
+            normalizer_params=None,
+            weights_initializer=tf.contrib.layers.xavier_initializer(),
+            weights_regularizer=None,
+            biases_initializer=None,
+            biases_regularizer=None,
+            reuse=tf.AUTO_REUSE,
+            variables_collections=None,
+            outputs_collections=None,
+            trainable=True,
+            scope='fc1')
 
-    # FC: input size (n_im, n_H0 * n_W0), output size (n_im, n_H0 * n_W0)
-    FC2 = tf.contrib.layers.fully_connected(
-        FC1,
-        n_out,
-        activation_fn=tf.tanh,
-        normalizer_fn=None,
-        normalizer_params=None,
-        weights_initializer=tf.contrib.layers.xavier_initializer(),
-        weights_regularizer=None,
-        biases_initializer=None,
-        biases_regularizer=None,
-        reuse=True,
-        variables_collections=None,
-        outputs_collections=None,
-        trainable=True,
-        scope='fc2')
+    with tf.device('/cpu:0'):
+        # FC: input size (n_im, n_H0 * n_W0), output size (n_im, n_H0 * n_W0)
+        FC2 = tf.contrib.layers.fully_connected(
+            FC1,
+            n_out,
+            activation_fn=tf.tanh,
+            normalizer_fn=None,
+            normalizer_params=None,
+            weights_initializer=tf.contrib.layers.xavier_initializer(),
+            weights_regularizer=None,
+            biases_initializer=None,
+            biases_regularizer=None,
+            reuse=tf.AUTO_REUSE,
+            variables_collections=None,
+            outputs_collections=None,
+            trainable=True,
+            scope='fc2')
 
     # Reshape output from FC layers into array of size (n_im, n_H0, n_W0, 1):
     FC_M = tf.reshape(FC2, [tf.shape(x)[0], tf.shape(x)[1], tf.shape(x)[2], 1])
@@ -122,9 +124,29 @@ def forward_propagation(x, parameters):
 
     # CONV2D: filters W2, stride 1, padding 'SAME'
     # Input size (n_im, n_H0, n_W0, 64), output size (n_im, n_H0, n_W0, 64)
-    Z2 = tf.nn.conv2d(CONV1, W2, strides=[1, 1, 1, 1], padding='SAME')
+    # Z2 = tf.nn.conv2d(CONV1, W2, strides=[1, 1, 1, 1], padding='SAME')
     # RELU
-    CONV2 = tf.nn.relu(Z2)
+    # CONV2 = tf.nn.relu(Z2)
+    CONV2 = tf.layers.conv2d(
+        CONV1,
+        filters=64,
+        kernel_size=5,
+        strides=(1, 1),
+        padding='same',
+        data_format='channels_last',
+        dilation_rate=(1, 1),
+        activation=tf.nn.relu,
+        use_bias=True,
+        kernel_initializer=None,
+        bias_initializer=tf.zeros_initializer(),
+        kernel_regularizer=tf.contrib.layers.l1_regularizer(0.0001),
+        bias_regularizer=None,
+        activity_regularizer=None,
+        kernel_constraint=None,
+        bias_constraint=None,
+        trainable=True,
+        name='conv2',
+        reuse=tf.AUTO_REUSE)
 
     # DE-CONV2D: filters W3, stride 1, padding 'SAME'
     # Input size (n_im, n_H0, n_W0, 64), output size (n_im, n_H0, n_W0, 1)
@@ -208,72 +230,84 @@ def model(X_train, Y_train, learning_rate=0.0001,
     be used to reconstruct the image from frequency space
     """
 
-    ops.reset_default_graph()  # to not overwrite tf variables
-    seed = 3
-    (m, n_H0, n_W0, _) = X_train.shape
+    with tf.device('/gpu:0'):
+        ops.reset_default_graph()  # to not overwrite tf variables
+        seed = 3
+        (m, n_H0, n_W0, _) = X_train.shape
 
-    # Create Placeholders
-    X, Y = create_placeholders(n_H0, n_W0)
+        # Create Placeholders
+        X, Y = create_placeholders(n_H0, n_W0)
 
-    # Initialize parameters
-    parameters = initialize_parameters()
+        # Initialize parameters
+        parameters = initialize_parameters()
 
-    # Build the forward propagation in the tf graph
-    DECONV = forward_propagation(X, parameters)
+        # Build the forward propagation in the tf graph
+        DECONV = forward_propagation(X, parameters)
 
-    # Add cost function to tf graph
-    cost = compute_cost(DECONV, Y)
+        # Add cost function to tf graph
+        cost = compute_cost(DECONV, Y)
 
-    # Backpropagation
-    optimizer = tf.train.RMSPropOptimizer(learning_rate).minimize(cost)
+        # Backpropagation
+        optimizer = tf.train.RMSPropOptimizer(learning_rate).minimize(cost)
 
-    # Initialize all the variables globally
-    init = tf.global_variables_initializer()
+        # Initialize all the variables globally
+        init = tf.global_variables_initializer()
 
-    # Add ops to save and restore all the variables
-    saver = tf.train.Saver()
+        # Add ops to save and restore all the variables
+        saver = tf.train.Saver()
 
-    # Start the session to compute the tf graph
-    with tf.Session() as sess:
+        # For memory
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
 
-        # Initialization
-        sess.run(init)
+        # Memory config
+        #config = tf.ConfigProto()
+        #config.gpu_options.allow_growth = True
+        config = tf.ConfigProto(log_device_placement=True)
 
-        # Training loop
-        for epoch in range(num_epochs):
-            tic = time.time()
+        # Start the session to compute the tf graph
+        with tf.Session(config=config) as sess:
 
-            minibatch_cost = 0.
-            num_minibatches = int(m / minibatch_size)  # number of minibatches
-            seed += 1
-            minibatches = random_mini_batches(X_train, Y_train,
-                                              minibatch_size, seed)
-            # Minibatch loop
-            for minibatch in minibatches:
-                # Select a minibatch
-                (minibatch_X, minibatch_Y) = minibatch
-                # Run the session to execute the optimizer and the cost
-                _, temp_cost = sess.run(
-                    [optimizer, cost],
-                    feed_dict={X: minibatch_X, Y: minibatch_Y})
+            # Initialization
+            sess.run(init)
 
-                cost_mean = np.mean(temp_cost) / num_minibatches
-                minibatch_cost += cost_mean
+            # Training loop
+            for epoch in range(num_epochs):
+                tic = time.time()
 
-            # Print the cost every epoch
-            if print_cost:
-                toc = time.time()
-                print ('EPOCH = ', epoch, 'COST = ', minibatch_cost, 'Elapsed time = ', (toc - tic))
+                minibatch_cost = 0.
+                num_minibatches = int(m / minibatch_size)  # number of minibatches
+                seed += 1
+                minibatches = random_mini_batches(X_train, Y_train,
+                                                  minibatch_size, seed)
+                # Minibatch loop
+                for minibatch in minibatches:
+                    # Select a minibatch
+                    (minibatch_X, minibatch_Y) = minibatch
+                    # Run the session to execute the optimizer and the cost
+                    _, temp_cost = sess.run(
+                        [optimizer, cost],
+                        feed_dict={X: minibatch_X, Y: minibatch_Y})
 
-        # Save the variables to disk.
-        save_path = saver.save(sess, "path to save model/model_name.ckpt")
-        print("Model saved in file: %s" % save_path)
+                    cost_mean = np.mean(temp_cost) / num_minibatches
+                    minibatch_cost += cost_mean
+
+                # Print the cost every epoch
+                if print_cost:
+                    toc = time.time()
+                    print ('EPOCH = ', epoch, 'COST = ', minibatch_cost, 'Elapsed time = ', (toc - tic))
+
+            # Save the variables to disk.
+            save_path = saver.save(sess, "path to save model/model_name.ckpt")
+            print("Model saved in file: %s" % save_path)
+
+            sess.close()
 
 
 # Finally run the model!
 model(X_train, Y_train,
       learning_rate=0.00002,
-      num_epochs=5,
+      num_epochs=30,
       minibatch_size=64,  # should be < than the number of input examples
       print_cost=True)
 
