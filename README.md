@@ -34,6 +34,4 @@ Hyperparameters: learning rate - 0.00002, 7500 images (30000 after augmentation)
 Example with brain image:  
 ![alt text](Img/myAutomap_7500im80_ep200_lr000002_nonnorm_brain.png)
 
-Other examples:  
-![alt text](Img/myAutomap_7500im80_ep200_lr000002_nonnorm.png)
 
